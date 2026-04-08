@@ -47,7 +47,11 @@ public class SecurityConfig {
             boolean isAdmin = authentication.getAuthorities().stream()
                     .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
             session.setAttribute("isAdmin", isAdmin);
-            response.sendRedirect("/menu"); // redirect both admin and customer to /menu
+            if (isAdmin) {
+                response.sendRedirect("/admin/dashboard");
+            } else {
+                response.sendRedirect("/menu");
+            }
         };
     }
 

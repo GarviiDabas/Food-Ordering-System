@@ -31,4 +31,7 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Long> {
 	@Query("SELECT FUNCTION('DATE_FORMAT', o.timestamp, '%Y-%m'), COUNT(o), SUM(o.totalPrice) FROM OrderEntity o GROUP BY FUNCTION('DATE_FORMAT', o.timestamp, '%Y-%m') ORDER BY FUNCTION('DATE_FORMAT', o.timestamp, '%Y-%m')")
 	List<Object[]> getRawMonthWiseSales();
 
+	// All orders sorted by latest first
+	List<OrderEntity> findAllByOrderByTimestampDesc();
+
 }

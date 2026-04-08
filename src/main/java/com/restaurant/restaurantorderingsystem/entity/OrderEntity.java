@@ -21,6 +21,9 @@ public class OrderEntity {
     @Column(name = "timestamp", nullable = false)
     private LocalDateTime timestamp;
 
+    @Column(name = "table_number")
+    private Integer tableNumber;
+
     @ManyToMany
     @JoinTable(
         name = "orders_items",
@@ -59,4 +62,7 @@ public class OrderEntity {
 
     public List<MenuItem> getMenuItems() { return menuItems; }
     public void setMenuItems(List<MenuItem> menuItems) { this.menuItems = menuItems; }
+
+    public Integer getTableNumber() { return tableNumber; }
+    public void setTableNumber(Integer tableNumber) { this.tableNumber = tableNumber; }
 }

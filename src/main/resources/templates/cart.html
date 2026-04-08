@@ -19,7 +19,13 @@
     <div th:if="${not #lists.isEmpty(cartItems)}">
         <form th:action="@{/cart/checkout}" method="post">
             <label>Name: <input type="text" name="customerName" required/></label>
-            <button type="submit" class="checkout-btn">Place Order</button>
+            <label style="margin-left: 15px;">Table: 
+                <select name="tableNumber" required>
+                    <option value="" disabled selected>Select a table</option>
+                    <option th:each="table : ${availableTables}" th:value="${table.tableNumber}" th:text="'Table ' + ${table.tableNumber}"></option>
+                </select>
+            </label>
+            <button type="submit" class="checkout-btn" style="margin-left: 15px;">Place Order</button>
         </form>
 
         <table>

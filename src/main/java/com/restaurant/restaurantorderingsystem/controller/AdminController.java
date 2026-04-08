@@ -5,6 +5,8 @@ import com.restaurant.restaurantorderingsystem.entity.MenuItem;
 import com.restaurant.restaurantorderingsystem.entity.OrderEntity;
 import com.restaurant.restaurantorderingsystem.repository.MenuItemRepository;
 import com.restaurant.restaurantorderingsystem.repository.OrderRepository;
+import com.restaurant.restaurantorderingsystem.entity.RestaurantTable;
+import com.restaurant.restaurantorderingsystem.repository.RestaurantTableRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -25,6 +27,9 @@ public class AdminController {
     @Autowired
     private MenuItemRepository menuItemRepository;
 
+    @Autowired
+    private RestaurantTableRepository restaurantTableRepository;
+
     // 🔹 Redirect root to admin dashboard
     @GetMapping("/")
     public String redirectToDashboard() {
@@ -34,6 +39,12 @@ public class AdminController {
     // 🔹 Admin Dashboard with stats and charts
     @GetMapping("/admin/dashboard")
     public String showAdminDashboard(Model model) {
+        if (restaurantTableRepository.count() == 0) {
+            for (int i = 1; i <= 10; i++) {
+                restaurantTableRepository.save(new RestaurantTable(i));
+            }
+        }
+
         long totalOrders = orderRepository.count();
 
         double totalRevenue = orderRepository.findAll().stream()
@@ -81,6 +92,7 @@ public class AdminController {
         model.addAttribute("weeklySales", weekWiseSales);
         model.addAttribute("monthlySales", monthWiseSales);
         model.addAttribute("orders", orderRepository.findAll());
+        model.addAttribute("tables", restaurantTableRepository.findAll());
 
         return "admin-dashboard";
     }

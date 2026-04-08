@@ -6,6 +6,8 @@ import com.restaurant.restaurantorderingsystem.entity.OrderEntity;
 import com.restaurant.restaurantorderingsystem.model.CartItem;
 import com.restaurant.restaurantorderingsystem.repository.MenuItemRepository;
 import com.restaurant.restaurantorderingsystem.repository.OrderRepository;
+import com.restaurant.restaurantorderingsystem.entity.RestaurantTable;
+import com.restaurant.restaurantorderingsystem.repository.RestaurantTableRepository;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -25,6 +27,9 @@ public class CartController {
     @Autowired
     private OrderRepository orderRepository;
 
+    @Autowired
+    private RestaurantTableRepository restaurantTableRepository;
+
     // 🔹 View cart
     @GetMapping("/cart")
     public String viewCart(HttpSession session, Model model) {
@@ -34,6 +39,7 @@ public class CartController {
 
         model.addAttribute("cartItems", cart);
         model.addAttribute("totalPrice", total);
+        model.addAttribute("availableTables", restaurantTableRepository.findByStatus("AVAILABLE"));
         return "cart";
     }
 
@@ -93,7 +99,9 @@ public class CartController {
 
     // 🔹 Checkout
     @PostMapping("/cart/checkout")
-    public String checkout(@RequestParam String customerName, HttpSession session, Model model) {
+    public String checkout(@RequestParam String customerName, 
+                           @RequestParam(required = false) Integer tableNumber,
+                           HttpSession session, Model model) {
         List<CartItem> cart = (List<CartItem>) session.getAttribute("cart");
         if (cart == null || cart.isEmpty()) {
             model.addAttribute("message", "Cart is empty!");
@@ -114,6 +122,14 @@ public class CartController {
         order.setMenuItems(menuItems);
         order.setTotalPrice(total);
         order.setTimestamp(LocalDateTime.now());
+        if (tableNumber != null) {
+            order.setTableNumber(tableNumber);
+            RestaurantTable table = restaurantTableRepository.findByTableNumber(tableNumber);
+            if (table != null) {
+                table.setStatus("RESERVED");
+                restaurantTableRepository.save(table);
+            }
+        }
 
         orderRepository.save(order);
         session.removeAttribute("cart");

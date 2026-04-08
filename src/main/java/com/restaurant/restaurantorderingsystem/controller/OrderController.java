@@ -58,7 +58,7 @@ public class OrderController {
             return "redirect:/login";
         }
 
-        List<OrderEntity> allOrders = orderRepository.findAll();
+        List<OrderEntity> allOrders = orderRepository.findAllByOrderByTimestampDesc();
         model.addAttribute("orders", allOrders);
         return "order-list";
     }
